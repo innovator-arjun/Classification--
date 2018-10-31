@@ -34,8 +34,17 @@ dataset['class'].value_counts().plot.bar()
 X=dataset.iloc[:,1:24].values
 y=dataset.iloc[:,0].values
 
+
+#Correlation Table 
 corr_table=dataset.corr()
 
+
+"""
+Standardization is a useful technique to transform attributes 
+with a Gaussian distribution and differing means and standard deviations to a
+standard Gaussian distribution with a mean of 0 and a standard deviation of 1.
+
+"""
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
 X= sc.fit_transform(X)
@@ -60,8 +69,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 # Fitting Logistic Regression to the Training set
-from sklearn.ensemble import RandomForestClassifier
-classifier = RandomForestClassifier(random_state = 0)
+from sklearn.tree import DecisionTreeClassifier
+classifier = DecisionTreeClassifier(random_state = 0)
 classifier.fit(X_train, y_train)
 
 # Predicting the Test set results
@@ -74,6 +83,7 @@ cm = confusion_matrix(y_test, y_pred)
 
 #Applying the k-Fold Cross Validation
 from sklearn.model_selection import cross_val_score
+from sklearn import metrics
 #10 accuracy will be returned that will be computed through 10 computation using k-fold
 accuracies=cross_val_score(estimator=classifier,X=X_train,y=y_train,cv=10)
 
@@ -83,7 +93,24 @@ std_accuracies=accuracies.std()*100
 
 
 
+classifier.score(X_test,y_pred)
+auc_roc=metrics.roc_auc_score(y_test,y_pred)
+auc_roc
 
+from sklearn.metrics import roc_curve,auc
+false_pos,true_pos,thresholds=roc_curve(y_test,y_pred)
+roc_curve=auc(false_pos,true_pos)
+roc_curve
+
+
+plt.figure(figsize=(10,10))
+plt.title('Receiver Operating Characteristic')
+plt.plot(false_pos,true_pos,color='red',label='AUC=%0.2f'%roc_curve)
+plt.legend(loc = 'lower right')
+plt.plot([0,1],[0,1],linestyle='--')
+plt.axis('tight')
+plt.ylabel('True Positive Rate')
+plt.xlabel('False Positive Rate')
 
 
 
@@ -125,5 +152,5 @@ plt.show()
 """
 
 
-
+#Ref : https://www.kaggle.com/nirajvermafcb/comparing-various-ml-models-roc-curve-comparison
 
